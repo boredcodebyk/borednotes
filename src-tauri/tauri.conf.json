@@ -1,0 +1,80 @@
+{
+  "build": {
+    "beforeDevCommand": "pnpm dev",
+    "beforeBuildCommand": "pnpm build",
+    "devPath": "http://localhost:1420",
+    "distDir": "../dist"
+  },
+  "package": {
+    "productName": "borednotes",
+    "version": "0.0.1"
+  },
+  "tauri": {
+    "allowlist": {
+      "all": false,
+      "shell": {
+        "all": false,
+        "open": true
+      },
+      "globalShortcut": {
+        "all": true
+      },
+      "dialog": {
+        "all": true, 
+        "ask": true, 
+        "confirm": true, 
+        "message": true, 
+        "open": true, 
+        "save": true 
+      },"fs": {
+        "all": true, 
+        "readFile": true,
+        "writeFile": true,
+        "readDir": true,
+        "copyFile": true,
+        "createDir": true,
+        "removeDir": true,
+        "removeFile": true,
+        "renameFile": true,
+        "exists": true,
+        "scope": {"allow": ["**"], "requireLiteralLeadingDot": false}
+      },
+      "window": {
+        "all": false,
+        "close": true,
+        "hide": true,
+        "show": true,
+        "maximize": true,
+        "minimize": true,
+        "unmaximize": true,
+        "unminimize": true,
+        "startDragging": true
+      }
+    },
+    "windows": [
+      {
+        "title": "bored notes",
+        "width": 1000,
+        "height": 960,
+        "minHeight": 960,
+        "minWidth": 1000,
+        "decorations": false
+      }
+    ],
+    "security": {
+      "csp": null
+    },
+    "bundle": {
+      "active": true,
+      "targets": "all",
+      "identifier": "bored.codebyk.borednotes",
+      "icon": [
+        "icons/32x32.png",
+        "icons/128x128.png",
+        "icons/128x128@2x.png",
+        "icons/icon.icns",
+        "icons/icon.ico"
+      ]
+    }
+  }
+}

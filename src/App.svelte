@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { registerAll, unregisterAll } from "@tauri-apps/api/globalShortcut";
   import CommandBox from "./lib/Commandbox.svelte";
   import Tabzone from "./lib/Tabzone.svelte";
@@ -6,11 +6,13 @@
   import { loadTheme } from "./lib/model/utils";
   import { appWindow } from "@tauri-apps/api/window";
   import Intro from "./lib/Intro.svelte";
-  import { persistedState, tabs } from "./lib/model/store";
-  import { readWorkspaceDir } from "./lib/model/filehandle";
+  import { activeTab, persistedState, tabs, type activeTabFormat } from "./lib/model/store";
+  import { idGenerator, newMarkdownFile, readWorkspaceDir } from "./lib/model/filehandle";
   import FileList from "./lib/components/FileList.svelte";
   import FileItem from "./lib/components/FileItem.svelte";
-    import { get } from "svelte/store";
+  import TitleBar from "./lib/TitleBar.svelte";
+
+  $: workspaceTabs = $tabs;
 
   let cmdbox;
 
@@ -22,12 +24,11 @@
     });
   }
 
-  onMount(async () => {
+  onMount(() => {
     console.log("registered shortcut");
-    await registerAll(["CommandOrControl+Shift+P"], (shortcut) => {
-      cmdbox.showModal();
-      console.log("open command box");
-    });
+    setTimeout(() => {
+      appWindow.show();
+    }, 3000);
   });
 
   onDestroy(async () => {
@@ -41,6 +42,18 @@
     event.key.toString().match(alphabetRegexp)
       ? (keypress.innerHTML = event.key.toString().toUpperCase())
       : (keypress.innerHTML = event.key.toString());
+  }
+
+  function newFile() {
+    newMarkdownFile($persistedState.workspace.path).then((value)=>{
+      var newActivetab: activeTabFormat = {
+        id: idGenerator(),
+        filename: value.filename,
+        path: value.path,
+      }
+      $tabs = [...$tabs,newActivetab];
+      $activeTab = newActivetab;
+    });
   }
 
   let bgContainer = "#3bdbe5";
@@ -59,81 +72,15 @@
 </script>
 
 <div style={cssVarStyles}>
-  <nav data-tauri-drag-region class="main__windowtitlebar">
-    <div data-tauri-drag-region class="titlebar__title"></div>
-    <div class="titlebar__action">
-      <button
-        class="icon__button minimize__button"
-        on:click={() => appWindow.minimize()}
-      >
-        <svg
-          width="48"
-          height="48"
-          viewBox="0 0 48 48"
-          version="1.1"
-          id="close_icon"
-          fill="currentColor"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <rect
-            id="minimize__icon"
-            width="32"
-            height="4"
-            x="-40"
-            y="-26"
-            transform="scale(-1)"
-          />
-        </svg>
-      </button>
-      <button
-        class="icon__button maximize__button"
-        on:click={() => appWindow.toggleMaximize()}
-      >
-        <svg
-          width="48"
-          height="48"
-          viewBox="0 0 48 48"
-          version="1.1"
-          id="close_icon"
-          fill="currentColor"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M 8,8 V 40 H 40 V 8 Z m 4,4 H 36 V 36 H 12 Z"
-            id="maximize__restore__icon"
-          /></svg
-        >
-      </button>
-      <button
-        class="icon__button close__button"
-        on:click={() => appWindow.close()}
-      >
-        <svg
-          width="48"
-          height="48"
-          viewBox="0 0 48 48"
-          version="1.1"
-          id="close_icon"
-          fill="currentColor"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M 11.199558,8 8,11.199558 20.800442,24 8,36.800442 11.199558,40 24,27.199558 36.800442,40 40,36.800442 27.199558,24 40,11.199558 36.800442,8 24,20.800442 Z"
-            id="close__icon"
-          >
-          </path></svg
-        >
-      </button>
-    </div>
-  </nav>
+  <TitleBar />
 
   <main
     class="main__container {!$persistedState.isSidepaneOpen
       ? 'main__container__fillwidth'
       : ''}"
   >
-    {#if get(persistedState).workspace.active}
-      {#if get(tabs).length !== 0}
+    {#if $persistedState.workspace.active}
+      {#if workspaceTabs.length !== 0}
         <Tabzone />
       {:else}
         <Intro />
@@ -149,6 +96,7 @@
       : ''}"
   >
     <h2 style="padding-left: 16px;">bored notes</h2>
+    <button on:click={newFile}>New File</button>
     <ul class="filetree__container">
       {#if $persistedState.workspace.active}
         {#await readWorkspaceDir($persistedState.workspace.path)}
@@ -168,6 +116,7 @@
         {/await}
       {/if}
     </ul>
+
     <!-- svelte-ignore a11y-no-static-element-interactions -->
     <div class="draghandler draghandler-right"></div>
   </aside>

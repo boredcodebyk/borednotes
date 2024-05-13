@@ -20,11 +20,12 @@ export function openWorkspace() {
 export async function newMarkdownFile(path: string) {
     var filename = "Untitled";
     var copyNumber = 1;
-    while (await exists(`${filename} ${copyNumber}.md`)) {
+    while (await exists(`${path}/${filename} ${copyNumber}.md`)) {
         copyNumber += 1;
     }
     try {
-        await writeTextFile(`${path}/${filename} ${copyNumber}`, "");
+        await writeTextFile(`${path}/${filename} ${copyNumber}.md`, "");
+        return {filename: `${filename} ${copyNumber}.md`,path:`${path}/${filename} ${copyNumber}.md`};
     } catch (error) {
         console.log(error);
     }

@@ -31,6 +31,7 @@
                 path: rootPath.toString(),
             };
             $persistedState.workspace = workspaceState;
+            $persistedState.isSidepaneOpen = true;
         }
     }
 

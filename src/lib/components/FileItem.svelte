@@ -12,9 +12,10 @@
         if ($tabs.find((e) => e.path == path)) {
             $activeTab = $tabs.find((e) => e.path == path);
         } else {
-            $tabs.push(tab);
+            $tabs = [...$tabs,tab];
             $activeTab = tab;
         }
+    console.log($tabs)
     }
 </script>
 

@@ -5,21 +5,40 @@
     function changeTab(value) {
         $activeTab = value;
     }
+
+    function closeTab(tabIndex) {
+        var closeIndex = $tabs.findIndex((e) => e.path == $tabs[tabIndex].path);
+
+        if (closeIndex == $tabs.length) {
+            $activeTab = get(tabs)[get(tabs).length - 1];
+        } else {
+            $activeTab = get(tabs)[closeIndex + 1];
+        }
+        if (closeIndex > -1) {
+            $tabs.splice(closeIndex, 1);
+        }
+    }
+
+    $: openedtabs = $tabs;
+    $: currentActiveTab = $activeTab;
 </script>
 
 <div class="tabzone__container">
     <ul class="tabzone__tabbar">
-        {#each get(tabs) as tab, index}
+        {#each openedtabs as tab, index}
             <li>
                 <button
                     class="tab__button"
-                    class:active__tab__button={$activeTab.path === tab.path}
-                    on:click={()=>changeTab(tab)}
+                    class:active__tab__button={currentActiveTab.path ===
+                        tab.path}
+                    on:click={() => changeTab(tab)}
                     >{tab.filename}
-                    <span
+                    <button
                         class="tabclose"
-                        class:tabclose__hide={!($activeTab.path === tab.path)}
-                        
+                        class:tabclose__hide={!(
+                            currentActiveTab.path === tab.path
+                        )}
+                        on:click={() => closeTab(index)}
                         ><svg
                             width="16"
                             height="16"
@@ -34,15 +53,15 @@
                                 id="close__icon"
                             >
                             </path></svg
-                        ></span
+                        ></button
                     >
                 </button>
             </li>
         {/each}
     </ul>
     <div class="tabzone__tabviewcontainer">
-        {#each get(tabs) as tab, index}
-            {#if $activeTab.id === tab.id}
+        {#each openedtabs as tab, index}
+            {#if currentActiveTab.id === tab.id}
                 <EditorContainer />
             {/if}
         {/each}
@@ -105,6 +124,8 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        background-color: transparent;
+        color: var(--onSecondaryContainer);
     }
 
     .tabclose:hover {

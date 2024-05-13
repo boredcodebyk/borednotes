@@ -1,9 +1,15 @@
+@font-face {
+  font-family: "Manrope";
+  src: url("Manrope-Regular.ttf");
+  src: local(''), url("Manrope-Regular.ttf") format('truetype');
+}
+
 :root {
+  font-family: Manrope;
   background-color: var(--surfaceContainerLow);
 }
 
 body {
-  font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
   font-size: 16px;
   line-height: 24px;
   font-weight: 400;
@@ -24,25 +30,6 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
-}
-
-.main__windowtitlebar {
-  width: 100%;
-  height: 48px;
-  display: flex;
-  justify-content: space-between;
-  top: 0;
-  left: 0;
-  position: fixed;
-  background-color: var(--surfaceContainerHigh, #1a1a1a);
-  border-bottom: 1px solid var(--outlineVariant);
-  z-index: 30;
-}
-
-.titlebar__action {
-  display: flex;
-  top: 0;
-  right: 0;
 }
 
 .main__container {
@@ -142,6 +129,8 @@ body {
   width: 432px;
   position: fixed;
   bottom: 0;
+  display: flex;
+  flex-direction: row;
   left: 0;
 }
 
@@ -187,7 +176,7 @@ body {
   text-align: left;
 }
 
-.command__list > .command__list_item {
+.command__list>.command__list_item {
   text-align: left;
   background-color: transparent;
   color: var(--onSurface);
@@ -196,12 +185,14 @@ body {
 .command__list_item_selected {
   background-color: var(--secondary) !important;
   color: var(--onSecondary) !important;
-  
+
 }
+
 .command__list_item:hover {
   background-color: var(--surfaceContainerLow);
   color: var(--onSurface);
 }
+
 .icon__button {
   display: flex;
   flex-direction: column;
@@ -225,37 +216,6 @@ body {
 .icon__button_active_leftborder {
   border-left: 2px solid var(--outline);
   opacity: 100%;
-}
-
-.close__button, .maximize__button, .minimize__button {
-  color: var(--onSurface);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 64px;
-  border-left: 1px solid transparent !important;
-  border-right: 1px solid transparent !important;
-}
-
-.close__button:hover {
-  background-color: var(--error);
-  color: var(--onError);
-  border-left: 1px solid var(--outline);
-  border-right: 1px solid var(--outline);
-}
-
-.minimize__button:hover {
-  background-color: var(--tertiaryContainer);
-  color: var(--onTertiaryContainer);
-  border-left: 1px solid var(--outline);
-  border-right: 1px solid var(--outline);
-}
-
-.maximize__button:hover {
-  background-color: var(--tertiaryContainer);
-  color: var(--onTertiaryContainer);
-  border-left: 1px solid var(--outline);
-  border-right: 1px solid var(--outline);
 }
 
 .command__search_container {
@@ -315,13 +275,9 @@ body {
   background-color: var(--surfaceContainerHigh);
 }
 
-.filetree__file {
+.filetree__file {}
 
-}
-
-.filetree__folder {
-
-}
+.filetree__folder {}
 
 .filetree__item:active {
   background-color: var(--secondaryContainer);
@@ -344,7 +300,8 @@ button {
   text-decoration: none;
 }
 
-button[disabled], button:disabled {
+button[disabled],
+button:disabled {
   background-color: var(--secondaryContainer);
   color: var(--outline);
   cursor: auto;

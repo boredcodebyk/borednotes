@@ -99,7 +99,8 @@
         align-items: center;
         justify-content: center;
         height: 100%;
-        width: 64px;
+        padding: 10px;
+        width: 1.2em;
         border-left: 1px solid transparent !important;
         border-right: 1px solid transparent !important;
     }

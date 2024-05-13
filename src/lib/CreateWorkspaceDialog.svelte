@@ -1,12 +1,14 @@
 <script lang="ts">
     import DialogBox from "./components/DialogBox.svelte";
     import {
+    idGenerator,
         newMarkdownFile,
         newWorkspace,
+        readWorkspaceDir,
         selectRootDir,
         //configFile,
     } from "./model/filehandle";
-    import { persistedState } from "./model/store";
+    import { persistedState, activeTab, tabs, type activeTabFormat } from "./model/store";
 
     export let workspaceDialog: HTMLDialogElement;
 
@@ -23,10 +25,21 @@
 
     async function _save() {
         await newWorkspace(workspacePath);
-        await newMarkdownFile(workspacePath);
+        newMarkdownFile(workspacePath).then((value) => {
+            var newActivetab: activeTabFormat = {
+                id: idGenerator(),
+                filename: value.filename,
+                path: value.path,
+            };
+            $tabs = [newActivetab];
+            $activeTab = newActivetab;
+        });
         //await configFile({ path: workspacePath, name: workspaceName });
         workspaceDialog.close();
         $persistedState.workspace = { active: true, path: workspacePath };
+        $persistedState.isSidepaneOpen = true;
+
+        readWorkspaceDir(workspacePath);
     }
 </script>
 

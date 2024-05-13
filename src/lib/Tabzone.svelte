@@ -9,13 +9,14 @@
     function closeTab(tabIndex) {
         var closeIndex = $tabs.findIndex((e) => e.path == $tabs[tabIndex].path);
 
-        if (closeIndex == $tabs.length) {
-            $activeTab = get(tabs)[get(tabs).length - 1];
-        } else {
-            $activeTab = get(tabs)[closeIndex + 1];
-        }
         if (closeIndex > -1) {
-            $tabs.splice(closeIndex, 1);
+            if (closeIndex == ($tabs.length - 1)) {
+                $activeTab = get(tabs)[(get(tabs).length - 1) - 1];
+                $tabs = get(tabs).filter((e)=> e.id !== get(tabs)[closeIndex].id)
+            } else {
+                $activeTab = get(tabs)[closeIndex + 1];
+                $tabs = get(tabs).filter((e)=> e.id !== get(tabs)[closeIndex].id)
+            }
         }
     }
 
@@ -136,7 +137,7 @@
         visibility: hidden;
     }
 
-    .tabclose__hide:hover {
+    .tabclose:hover .tabclose__hide {
         visibility: visible;
     }
 </style>

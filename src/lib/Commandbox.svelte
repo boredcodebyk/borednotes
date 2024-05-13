@@ -1,8 +1,8 @@
 <script lang="ts">
     import CreateWorkspaceDialog from "./CreateWorkspaceDialog.svelte";
     import DialogBox from "./components/DialogBox.svelte";
-    import { openWorkspace, selectRootDir } from "./model/filehandle";
-    import { activeTab, persistedState, tabs, type activeTabFormat } from "./model/store";
+    import { openWorkspace, readWorkspaceDir, selectRootDir } from "./model/filehandle";
+    import { activeTab, fileDir, persistedState, tabs, type activeTabFormat } from "./model/store";
     import { commandList } from "./model/utils";
 
     export let cmdbox;
@@ -32,7 +32,9 @@
             };
             $persistedState.workspace = workspaceState;
             $persistedState.isSidepaneOpen = true;
+            readWorkspaceDir(rootPath.toString());
         }
+
     }
 
     function closeWorkspace() {

@@ -20,6 +20,6 @@
 </script>
 
 <button
-    class="filetree__item filetree__file"
+    class="filetree__item filetree__file" class:filetree__file_active={$activeTab.path === path}
     on:click={() => openFileInTab(name, path)}>{name}</button
 >

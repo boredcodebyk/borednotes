@@ -1,7 +1,24 @@
 @font-face {
   font-family: "Manrope";
-  src: url("Manrope-Regular.ttf");
-  src: local(''), url("Manrope-Regular.ttf") format('truetype');
+  src: url("/asset/fonts/Manrope-Regular.ttf");
+  src: local(''), url("/asset/fonts/Manrope-Regular.ttf") format('truetype');
+}
+
+
+body::-webkit-scrollbar {
+  width: 8px;
+}
+
+body::-webkit-scrollbar-track {
+  background: transparent; 
+}
+ 
+body::-webkit-scrollbar-thumb {
+  background: var(--surfaceContainerLowest); 
+}
+
+body::-webkit-scrollbar-thumb:hover {
+  background:var(--surfaceContainerHighest); 
 }
 
 :root {
@@ -36,10 +53,10 @@ body {
   background-color: var(--surfaceContainerLow, #2a2a2a);
   color: var(--onSurface);
   height: calc(100dvh - 48px);
-  width: calc(100dvw - 432px);
+  width: calc(100dvw - 408px);
   position: fixed;
   top: 48px;
-  left: 432px;
+  left: 408px;
   z-index: 0;
   margin: 0;
   padding: 0;
@@ -57,7 +74,7 @@ body {
   border-right: 1px solid var(--outlineVariant);
   width: 360px;
   margin: 0;
-  padding: 0 12px;
+  padding: 0;
   height: calc(100dvh - 24px);
   z-index: 1;
   position: fixed;
@@ -193,6 +210,16 @@ body {
   color: var(--onSurface);
 }
 
+.segmented__icon__button {
+  display: flex;
+  justify-content: space-evenly;
+  border-bottom: 1px solid var(--outlineVariant);
+}
+
+.segmented__icon__button > .icon__button {
+  width: 100%;
+}
+
 .icon__button {
   display: flex;
   flex-direction: column;
@@ -205,7 +232,12 @@ body {
   text-decoration: none;
   font-size: 2em;
   height: 48px;
+  width: 48px;
   opacity: 60%;
+}
+
+.icon__button:hover {
+  background-color: var(--surfaceContainerHighest);
 }
 
 .icon__button_leftborder:hover {
@@ -275,7 +307,10 @@ body {
   background-color: var(--surfaceContainerHigh);
 }
 
-.filetree__file {}
+.filetree__file_active {
+  background-color: var(--secondaryContainer);
+  color: var(--onSecondaryContainer);
+}
 
 .filetree__folder {}
 
@@ -337,4 +372,26 @@ input[type=text] {
 
 .cm-content {
   caret-color: var(--onSurface) !important;
+  
+}
+
+*::-webkit-scrollbar {
+  display: none;
+} 
+
+.main__container::-webkit-scrollbar {
+  width: 10px;
+}
+
+.main__container::-webkit-scrollbar-track {
+  background: #f1f1f1; 
+}
+ 
+
+.main__container::-webkit-scrollbar-thumb {
+  background: #888; 
+}
+
+.main__container::-webkit-scrollbar-thumb:hover {
+  background: #555; 
 }

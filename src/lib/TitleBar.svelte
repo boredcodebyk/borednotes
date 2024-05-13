@@ -88,6 +88,7 @@
         display: flex;
         top: 0;
         right: 0;
+        height: 2.4em;
     }
 
     .close__button,
@@ -97,6 +98,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        height: 100%;
         width: 64px;
         border-left: 1px solid transparent !important;
         border-right: 1px solid transparent !important;

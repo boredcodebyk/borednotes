@@ -6,10 +6,19 @@
   import { loadTheme } from "./lib/model/utils";
   import { appWindow } from "@tauri-apps/api/window";
   import Intro from "./lib/Intro.svelte";
-  import { activeTab, persistedState, tabs, type activeTabFormat } from "./lib/model/store";
-  import { idGenerator, newMarkdownFile, readWorkspaceDir } from "./lib/model/filehandle";
-  import FileList from "./lib/components/FileList.svelte";
-  import FileItem from "./lib/components/FileItem.svelte";
+  import {
+    activeTab,
+    fileDir,
+    persistedState,
+    tabs,
+    type activeTabFormat,
+  } from "./lib/model/store";
+  import {
+    idGenerator,
+    newMarkdownFile,
+    readWorkspaceDir,
+  } from "./lib/model/filehandle";
+  import FileTree from "./lib/FileTree.svelte";
   import TitleBar from "./lib/TitleBar.svelte";
 
   $: workspaceTabs = $tabs;
@@ -25,6 +34,9 @@
   }
 
   onMount(() => {
+    if ($persistedState.workspace.active) {
+      readWorkspaceDir($persistedState.workspace.path)
+    }
     console.log("registered shortcut");
     setTimeout(() => {
       appWindow.show();
@@ -45,14 +57,15 @@
   }
 
   function newFile() {
-    newMarkdownFile($persistedState.workspace.path).then((value)=>{
+    newMarkdownFile($persistedState.workspace.path).then((value) => {
       var newActivetab: activeTabFormat = {
         id: idGenerator(),
         filename: value.filename,
         path: value.path,
-      }
-      $tabs = [...$tabs,newActivetab];
+      };
+      $tabs = [...$tabs, newActivetab];
       $activeTab = newActivetab;
+    readWorkspaceDir($persistedState.workspace.path);
     });
   }
 
@@ -95,27 +108,42 @@
       ? 'main__sidepane__hidden'
       : ''}"
   >
-    <h2 style="padding-left: 16px;">bored notes</h2>
-    <button on:click={newFile}>New File</button>
-    <ul class="filetree__container">
-      {#if $persistedState.workspace.active}
-        {#await readWorkspaceDir($persistedState.workspace.path)}
-          <p>loading</p>
-        {:then files}
-          {#each files as file}
-            {#if file.children}
-              <li>
-                <FileList name={file.name} files={file.children} />
-              </li>
-            {:else}
-              <li>
-                <FileItem name={file.name} path={file.path} />
-              </li>
-            {/if}
-          {/each}
-        {/await}
-      {/if}
-    </ul>
+
+    <div class="segmented__icon__button">
+      <button class="icon__button" on:click={newFile}>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+          class="w-6 h-6"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125"
+          />
+        </svg>
+      </button>
+      <button class="icon__button">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+          class="w-6 h-6"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M12 10.5v6m3-3H9m4.06-7.19-2.12-2.12a1.5 1.5 0 0 0-1.061-.44H4.5A2.25 2.25 0 0 0 2.25 6v12a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9a2.25 2.25 0 0 0-2.25-2.25h-5.379a1.5 1.5 0 0 1-1.06-.44Z"
+          />
+        </svg>
+      </button>
+    </div>
+    <FileTree />
 
     <!-- svelte-ignore a11y-no-static-element-interactions -->
     <div class="draghandler draghandler-right"></div>

@@ -1,4 +1,6 @@
+import type { FileEntry } from '@tauri-apps/api/fs';
 import { persisted } from 'svelte-persisted-store'
+import { writable } from 'svelte/store';
 
 export interface activeTabFormat {
     id: string,
@@ -18,7 +20,7 @@ export const preferences = persisted('preferences', {
 });
 
 export const persistedState = persisted('persistedState', {
-    isSidepaneOpen: true,
+    isSidepaneOpen: false,
     workspace: {
         active: false,
         path: ""
@@ -27,3 +29,5 @@ export const persistedState = persisted('persistedState', {
 
 export const activeTab = persisted('activeTab', <activeTabFormat>{});
 export const tabs = persisted('tabs', <activeTabFormat[]>[]);
+
+export const fileDir = persisted('fileDir',<FileEntry[]>[]);

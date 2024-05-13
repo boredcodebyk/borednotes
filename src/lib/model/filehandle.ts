@@ -2,7 +2,7 @@ import { open, save } from "@tauri-apps/api/dialog";
 import { createDir, exists, readDir, writeTextFile } from "@tauri-apps/api/fs"
 import { get } from "svelte/store";
 import { watch } from "tauri-plugin-fs-watch-api";
-import { persistedState } from "./store";
+import { fileDir, persistedState } from "./store";
 
 export async function newWorkspace(path: string) {
     console.log("New Workspace");
@@ -44,7 +44,7 @@ export async function selectRootDir() {
 
 export async function readWorkspaceDir(path: string) {
     const entries = await readDir(path, { recursive: true });
-    return entries
+    fileDir.set(entries);
 }
 
 interface workspaceConfig {

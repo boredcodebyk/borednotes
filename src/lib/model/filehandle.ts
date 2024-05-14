@@ -1,5 +1,5 @@
 import { open, save } from "@tauri-apps/api/dialog";
-import { createDir, exists, readDir, renameFile, writeTextFile } from "@tauri-apps/api/fs"
+import { createDir, exists, readDir, renameFile, writeTextFile, type FileEntry } from "@tauri-apps/api/fs"
 import { get } from "svelte/store";
 import { watch } from "tauri-plugin-fs-watch-api";
 import { activeTab, fileDir, persistedState } from "./store";
@@ -44,7 +44,11 @@ export async function selectRootDir() {
 
 export async function readWorkspaceDir(path: string) {
     const entries = await readDir(path, { recursive: true });
-    fileDir.set(entries);
+    var folderList: FileEntry[] = entries.filter((folder)=>folder.children !== null);
+    var fileList: FileEntry[] = entries.filter((file)=>file.children === null);
+    var combinedList = [...folderList,...fileList];
+    console.log([...folderList,...fileList])
+    fileDir.set(combinedList);
 }
 
 interface workspaceConfig {

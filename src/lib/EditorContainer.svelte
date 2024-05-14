@@ -30,6 +30,7 @@
         persistedState,
         tabs,
         type activeTabFormat,
+        showContextMenu
     } from "./model/store";
     import {
         readWorkspaceDir,
@@ -39,6 +40,8 @@
     import { highlightStyle } from "./model/markdownHighlightStyle";
     import { get } from "svelte/store";
     import { languages } from "@codemirror/language-data";
+    import ContextMenu from "./components/ContextMenu.svelte";
+    import { rightClick, type ContextMenuItem } from "./model/utils";
     export let initFinished = false;
     let editorContainer: HTMLElement;
     let editor: EditorView;
@@ -46,7 +49,28 @@
     let lineNumber: number = 1;
     let colNumber: number = 1;
     let fileName: string = $activeTab.filename.split(".md")[0];
-    
+    let editor__root__container: HTMLDivElement;
+    let contextMenuList: ContextMenuItem[] = [
+        {
+            name: "One",
+            method: blank1(),
+        },
+        {
+            name: "Two",
+            method: blank1(),
+        },
+        {
+            name: "Three",
+            method: blank1(),
+        },
+        {
+            name: "Four",
+            method: blank1(),
+        },
+    ];
+
+    function blank1() {}
+
     const dispatch = createEventDispatcher();
 
     function refreshEditorTitle() {
@@ -185,7 +209,7 @@
 
     async function rename(newFilename: string) {
         var path = $activeTab.path.split($activeTab.filename)[0];
-        await renameFileInWorkspace(newFilename,path);
+        await renameFileInWorkspace(newFilename, path);
         var updateActiveTab: activeTabFormat = {
             id: $activeTab.id,
             filename: `${newFilename.split("/").pop()}.md`,
@@ -203,7 +227,11 @@
         refreshEditorTitle();
     }
 </script>
-<div class="editor__container">
+
+<!-- svelte-ignore a11y-no-static-element-interactions -->
+<!-- svelte-ignore a11y-click-events-have-key-events -->
+<div class="editor__container" bind:this={editor__root__container} on:contextmenu|preventDefault={(event)=>rightClick(event,editor__root__container,contextMenuList)} 
+on:click={()=>$showContextMenu = false}>
     <input
         class="editor__title"
         on:change={() => rename(fileName)}
@@ -213,6 +241,8 @@
 </div>
 
 <footer class="sub__footer">Ln {lineNumber}, Col {colNumber}</footer>
+
+<ContextMenu />
 
 <style>
     .editor__container {

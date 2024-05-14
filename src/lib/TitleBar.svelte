@@ -4,7 +4,7 @@
 </script>
 
 <nav data-tauri-drag-region class="main__windowtitlebar">
-    <div data-tauri-drag-region class="titlebar__title">bored notes {($activeTab.filename !== "" || !($activeTab)) ? `- ${$activeTab.filename}` : ""}</div>
+    <div data-tauri-drag-region class="titlebar__title">bored notes {($activeTab.filename !== "" || $activeTab.filename !== undefined) ? `- ${$activeTab.filename}` : ""}</div>
     <div class="titlebar__action">
         <button
             class="icon__button minimize__button"
@@ -87,6 +87,7 @@
 
     .titlebar__title{
         display: flex;
+        font-size: 0.85em;
         align-items: center;
         padding-left: 2.4em;
         color: var(--onSurface);

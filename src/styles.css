@@ -371,7 +371,7 @@ input[type=text] {
   display: none !important;
 }
 
-.cm-content {
+.cm-content * {
   caret-color: var(--onSurface) !important;
   
 }

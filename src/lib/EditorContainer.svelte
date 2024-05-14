@@ -1,21 +1,35 @@
 <script lang="ts">
-    import { EditorView } from "prosemirror-view";
-    import "../../node_modules/prosemirror-view/style/prosemirror.css"
-    import { EditorState } from "prosemirror-state";
-    import { history, undo, redo } from "prosemirror-history";
-    
-import {schema, defaultMarkdownParser,
-        defaultMarkdownSerializer } from "prosemirror-markdown"
-    import { keymap } from "prosemirror-keymap";
+    import { EditorView, basicSetup } from "codemirror";
+    import { EditorState, type StateCommand } from "@codemirror/state";
+    import {
+        history,
+        historyKeymap,
+        defaultKeymap,
+        indentLess,
+        indentMore,
+    } from "@codemirror/commands";
+    import {
+        closeBrackets,
+        closeBracketsKeymap,
+    } from "@codemirror/autocomplete";
+    import {
+        HighlightStyle,
+        bracketMatching,
+        indentOnInput,
+        syntaxHighlighting,
+    } from "@codemirror/language";
+    import { markdown, markdownLanguage } from "@codemirror/lang-markdown";
+    import { keymap } from "@codemirror/view";
 
+    import { type MarkdownConfig } from "@lezer/markdown";
+    import { tags, Tag, styleTags } from "@lezer/highlight";
     import { createEventDispatcher, onDestroy, onMount } from "svelte";
-
     import { readTextFile } from "@tauri-apps/api/fs";
     import { activeTab } from "./model/store";
     import { saveFile } from "./model/filehandle";
+    import { highlightStyle } from "./model/markdownHighlightStyle";
     import { get } from "svelte/store";
-    import { baseKeymap } from "prosemirror-commands";
-    import { DOMParser } from "prosemirror-model";
+    import { languages } from "@codemirror/language-data";
     export let initFinished = false;
     let editorContainer: HTMLElement;
     let editor: EditorView;
@@ -36,60 +50,86 @@ import {schema, defaultMarkdownParser,
         }
     }
 
-    // const insertTab: StateCommand = ({ state, dispatch }) => {
-    //     dispatch(
-    //         state.update({
-    //             changes: {
-    //                 from: state.doc.lineAt(state.selection.main.head).from,
-    //                 insert: "\t",
-    //             },
-    //         }),
-    //     );
-    //     return true;
-    // };
+    const insertTab: StateCommand = ({ state, dispatch }) => {
+        dispatch(
+            state.update({
+                changes: {
+                    from: state.doc.lineAt(state.selection.main.head).from,
+                    insert: "\t",
+                },
+            }),
+        );
+        return true;
+    };
+
+    const customTags = {
+        headingMark: Tag.define(),
+    };
+
+    const MarkStylingExtension: MarkdownConfig = {
+        props: [
+            styleTags({
+                HeadingMark: customTags.headingMark,
+            }),
+        ],
+    };
+
+    
 
     function initEditorState(text: string) {
         editorContainer.innerHTML = "";
 
         let editorExtensions = [
+            basicSetup,
+            markdown({
+                addKeymap: true,
+                base: markdownLanguage,
+                defaultCodeLanguage: markdownLanguage,
+                codeLanguages: languages,
+                extensions: [MarkStylingExtension],
+            }),
+            syntaxHighlighting(highlightStyle),
             history(),
-            
-            keymap({ "Mod-z": undo, "Mod-y": redo }),
-            keymap(baseKeymap),
-            // EditorView,
-            // EditorView.updateListener.of((update) => {
-            //     if (update.docChanged) {
-            //         saveFile(get(activeTab).path, getText());
-            //         dispatchEvent("textChanged", {
-            //             value: getText(),
-            //             // cursor: getCursor(),
-            //             history: {},
-            //             getLine: getLineCol(),
-            //         });
-            //     }
-            // }),
+            closeBrackets(),
+            bracketMatching(),
+            indentOnInput(),
+            keymap.of([
+                ...defaultKeymap,
+                ...historyKeymap,
+                ...closeBracketsKeymap,
+                {
+                    key: "Tab",
+                    preventDefault: true,
+                    run: insertTab,
+                },
+                {
+                    key: "Shift-Tab",
+                    preventDefault: true,
+                    run: indentLess,
+                },
+            ]),
+            EditorView.lineWrapping,
+            EditorView.updateListener.of((update) => {
+                if (update.docChanged) {
+                    saveFile(get(activeTab).path, getText());
+                    dispatchEvent("textChanged", {
+                        value: getText(),
+                        // cursor: getCursor(),
+                        history: {},
+                        getLine: getLineCol(),
+                    });
+                }
+            }),
         ];
 
         editorState = EditorState.create({
-            doc: defaultMarkdownParser.parse(text),
-            schema: schema,
-            plugins: editorExtensions,
+            doc: text,
+            extensions: editorExtensions,
         });
 
-        editor = new EditorView(editorContainer, {
+        editor = new EditorView({
             state: editorState,
-            dispatchTransaction(transaction) {
-                console.log(
-                    "Document size went from",
-                    transaction.before.content.size,
-                    "to",
-                    transaction.doc.content.size,
-                    defaultMarkdownSerializer.serialize(transaction.doc)
-                );
-                saveFile(get(activeTab).path, defaultMarkdownSerializer.serialize(transaction.doc));
-                let newState = editor.state.apply(transaction);
-                editor.updateState(newState);
-            },
+            parent: editorContainer,
         });
     }
     onMount(() => {
@@ -100,7 +140,9 @@ import {schema, defaultMarkdownParser,
             getLine: getLineCol(),
         });
         focus();
-        return () => {};
+        return () => {
+            editor.destroy();
+        };
     });
 
     function focus() {
@@ -116,15 +158,15 @@ import {schema, defaultMarkdownParser,
     }
 
     function getLineCol() {
-        // if (typeof editor !== "undefined") {
-        //     lineNumber = editor.state.doc.lineAt(
-        //         editor.state.selection.main.head,
-        //     ).number;
-        //     colNumber =
-        //         editor.state.doc.nodeAt(editor.state.selection.head)..to -
-        //         editor.state.doc.nodeAt(editor.state.selection.head).from +
-        //         1;
-        // }
+        if (typeof editor !== "undefined") {
+            lineNumber = editor.state.doc.lineAt(
+                editor.state.selection.main.head,
+            ).number;
+            colNumber =
+                editor.state.doc.lineAt(editor.state.selection.main.head).to -
+                editor.state.doc.lineAt(editor.state.selection.main.head).from +
+                1;
+        }
     }
 </script>
 

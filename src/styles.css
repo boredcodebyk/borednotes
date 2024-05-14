@@ -362,8 +362,9 @@ input[type=text] {
   user-select: none;
 }
 
-.cm-editor {
+.ProseMirror {
   height: 100%;
+  padding: 12px;
 }
 
 .cm-gutters {

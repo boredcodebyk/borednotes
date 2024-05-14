@@ -38,6 +38,9 @@
     .context__menu {
         background-color: var(--surfaceContainerHighest);
         color: var(--onSurface);
-        box-shadow: var(--secondaryContainer) 0.4em 0.4em;
+        border: 1px solid var(--outline);
+        min-width: 18em;
+        padding: 0;
+        margin: 0;
     }
 </style>

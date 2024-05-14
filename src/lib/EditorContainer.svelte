@@ -25,8 +25,17 @@
     import { tags, Tag, styleTags } from "@lezer/highlight";
     import { createEventDispatcher, onDestroy, onMount } from "svelte";
     import { readTextFile } from "@tauri-apps/api/fs";
-    import { activeTab } from "./model/store";
-    import { saveFile } from "./model/filehandle";
+    import {
+        activeTab,
+        persistedState,
+        tabs,
+        type activeTabFormat,
+    } from "./model/store";
+    import {
+        readWorkspaceDir,
+        renameFileInWorkspace,
+        saveFile,
+    } from "./model/filehandle";
     import { highlightStyle } from "./model/markdownHighlightStyle";
     import { get } from "svelte/store";
     import { languages } from "@codemirror/language-data";
@@ -36,7 +45,13 @@
     let editorState: EditorState;
     let lineNumber: number = 1;
     let colNumber: number = 1;
+    let fileName: string = $activeTab.filename.split(".md")[0];
+    
     const dispatch = createEventDispatcher();
+
+    function refreshEditorTitle() {
+        fileName = $activeTab.filename.split(".md")[0];
+    }
 
     function dispatchEvent(name, data) {
         dispatch(name, {
@@ -73,8 +88,6 @@
             }),
         ],
     };
-
-    
 
     function initEditorState(text: string) {
         editorContainer.innerHTML = "";
@@ -136,6 +149,7 @@
         readTextFile($activeTab.path).then((value) => {
             initEditorState(value);
         });
+
         dispatchEvent("editorChange", {
             getLine: getLineCol(),
         });
@@ -168,9 +182,36 @@
                 1;
         }
     }
-</script>
 
-<div class="editor__container" bind:this={editorContainer}></div>
+    async function rename(newFilename: string) {
+        var path = $activeTab.path.split($activeTab.filename)[0];
+        await renameFileInWorkspace(newFilename,path);
+        var updateActiveTab: activeTabFormat = {
+            id: $activeTab.id,
+            filename: `${newFilename.split("/").pop()}.md`,
+            path: `${path}${newFilename.split(path).join("/")}.md`,
+        };
+        var activeTabIndex = $tabs.findIndex((v) => v.id === $activeTab.id);
+
+        var alltabs = $tabs;
+
+        alltabs.splice(activeTabIndex, 1, updateActiveTab);
+        $tabs = alltabs;
+
+        $activeTab = updateActiveTab;
+        readWorkspaceDir($persistedState.workspace.path);
+        refreshEditorTitle();
+    }
+</script>
+<div class="editor__container">
+    <input
+        class="editor__title"
+        on:change={() => rename(fileName)}
+        bind:value={fileName}
+    />
+    <div bind:this={editorContainer}></div>
+</div>
+
 <footer class="sub__footer">Ln {lineNumber}, Col {colNumber}</footer>
 
 <style>
@@ -178,6 +219,17 @@
         width: 100%;
         height: calc(100% - 24px);
         overflow-y: scroll;
+    }
+
+    .editor__title {
+        padding: 1em 5em 1em 5em;
+        width: 100%;
+        font-size: 2em;
+        background-color: var(--surfaceContainer);
+        color: var(--onSurface);
+        border: none;
+        user-select: none;
+        -webkit-user-select: none;
     }
 
     .sub__footer {

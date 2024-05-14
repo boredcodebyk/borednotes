@@ -1,5 +1,6 @@
 <script lang="ts">
     import type { FileEntry } from "@tauri-apps/api/fs";
+    import {CaretRight, CaretDown} from "phosphor-svelte";
     import FileItem from "./FileItem.svelte";
     export let files: FileEntry[];
     export let name;
@@ -10,7 +11,15 @@
     }
 </script>
 
-<button class="filetree__item filetree__folder" on:click={toggle}>{name}</button>
+<button class="filetree__item filetree__folder" on:click={toggle}>
+    {#if expanded}
+        <CaretDown/>
+    {:else}
+        <CaretRight/>
+    {/if}
+
+    {name}</button
+>
 
 {#if expanded}
     <ul class="filetree__subcontainer">
@@ -19,7 +28,7 @@
                 {#if entry.children}
                     <svelte:self name={entry.name} files={entry.children} />
                 {:else}
-                   <FileItem name={entry.name} path={entry.path}/>
+                    <FileItem name={entry.name} path={entry.path} />
                 {/if}
             </li>
         {/each}

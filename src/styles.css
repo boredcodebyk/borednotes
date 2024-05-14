@@ -10,15 +10,15 @@ body::-webkit-scrollbar {
 }
 
 body::-webkit-scrollbar-track {
-  background: transparent; 
+  background: transparent;
 }
- 
+
 body::-webkit-scrollbar-thumb {
-  background: var(--surfaceContainerLowest); 
+  background: var(--surfaceContainerLowest);
 }
 
 body::-webkit-scrollbar-thumb:hover {
-  background:var(--surfaceContainerHighest); 
+  background: var(--surfaceContainerHighest);
 }
 
 :root {
@@ -127,7 +127,7 @@ body {
 .main__sideactionbar {
   background-color: var(--surfaceContainerHigh, #1a1a1a);
   border-right: 1px solid var(--outlineVariant);
-  width: 48px;
+  width: 2.4em;
   height: calc(100dvh - 2.4em);
   z-index: 2;
   position: fixed;
@@ -212,27 +212,24 @@ body {
 
 .segmented__icon__button {
   display: flex;
+  align-items: center;
   justify-content: space-evenly;
   border-bottom: 1px solid var(--outlineVariant);
 }
 
-.segmented__icon__button > .icon__button {
+.segmented__icon__button>.icon__button {
   width: 100%;
 }
 
 .icon__button {
-  display: flex;
-  flex-direction: column;
-  text-align: center;
-  justify-items: center;
+  display: block;
   background-color: transparent;
   color: var(--onSurface);
   padding: 12px;
   border: 2px solid transparent;
   text-decoration: none;
-  font-size: 2em;
-  height: 48px;
-  width: 48px;
+  height: 2.4em;
+  width: 2.4em;
   opacity: 60%;
 }
 
@@ -285,8 +282,13 @@ body {
 .filetree__subcontainer {
   list-style: none;
   padding: 0 0 0 0.5em;
-  margin: 0 0 0 0.5em;
-  border-left: 1px solid rgba(128, 128, 128, 0.4);
+  margin: 0 0 0 1em;
+  border-left: 1px solid var(--outlineVariant);
+}
+
+.filetree__subcontainer:hover {
+
+  border-left: 1px solid var(--outline);
 }
 
 .filetree__item {
@@ -312,7 +314,25 @@ body {
   color: var(--onSecondaryContainer);
 }
 
-.filetree__folder {}
+.filetree__file > svg {
+  display: inline-block;
+  width: 1em;
+  padding-right: 0.5em;
+  
+}
+
+.filetree__folder {
+  display: flex;
+  align-items: center;
+  font-size: 1em;
+  padding: 0.25em 0.5em;
+}
+
+.filetree__folder > svg {
+  display: inline-block;
+  width: 1em;
+  padding-right: 0.5em;
+}
 
 .filetree__item:active {
   background-color: var(--secondaryContainer);
@@ -362,9 +382,16 @@ input[type=text] {
   user-select: none;
 }
 
-.ProseMirror {
+.cm-editor {
   height: 100%;
-  padding: 12px;
+  padding: 2em 10em 0 10em;
+}
+
+@media screen and (max-width: 600px) {
+  .cm-editor {
+    height: 100%;
+    padding: 2em 0 0 0;
+  }
 }
 
 .cm-gutters {
@@ -373,26 +400,26 @@ input[type=text] {
 
 .cm-content * {
   caret-color: var(--onSurface) !important;
-  
+
 }
 
 *::-webkit-scrollbar {
   display: none;
-} 
+}
 
 .main__container::-webkit-scrollbar {
   width: 10px;
 }
 
 .main__container::-webkit-scrollbar-track {
-  background: #f1f1f1; 
+  background: #f1f1f1;
 }
- 
+
 
 .main__container::-webkit-scrollbar-thumb {
-  background: #888; 
+  background: #888;
 }
 
 .main__container::-webkit-scrollbar-thumb:hover {
-  background: #555; 
+  background: #555;
 }

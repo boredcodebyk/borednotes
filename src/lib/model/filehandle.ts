@@ -1,8 +1,8 @@
 import { open, save } from "@tauri-apps/api/dialog";
-import { createDir, exists, readDir, writeTextFile } from "@tauri-apps/api/fs"
+import { createDir, exists, readDir, renameFile, writeTextFile } from "@tauri-apps/api/fs"
 import { get } from "svelte/store";
 import { watch } from "tauri-plugin-fs-watch-api";
-import { fileDir, persistedState } from "./store";
+import { activeTab, fileDir, persistedState } from "./store";
 
 export async function newWorkspace(path: string) {
     console.log("New Workspace");
@@ -25,7 +25,7 @@ export async function newMarkdownFile(path: string) {
     }
     try {
         await writeTextFile(`${path}/${filename} ${copyNumber}.md`, "");
-        return {filename: `${filename} ${copyNumber}.md`,path:`${path}/${filename} ${copyNumber}.md`};
+        return { filename: `${filename} ${copyNumber}.md`, path: `${path}/${filename} ${copyNumber}.md` };
     } catch (error) {
         console.log(error);
     }
@@ -98,4 +98,21 @@ async function watcher() {
         },
         { recursive: true },
     );
+}
+
+export async function renameFileInWorkspace(newName: string,path:string) {
+    if (newName) {
+        var oldPath = get(activeTab).path;
+        var newPath = `${path}/${newName}.md`;
+        var checkDirs = newName.split("/");
+        if (checkDirs.length === 1) {
+            await renameFile(oldPath, newPath);
+        } else if (checkDirs.length > 1) {
+            checkDirs.pop();
+            await createDir( `${path}/${checkDirs.join("/")}`,{recursive: true} );
+            await renameFile(oldPath, newPath);
+        }
+    }
+
+
 }

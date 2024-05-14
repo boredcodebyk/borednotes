@@ -1,23 +1,59 @@
 <script>
-    import { activeTab, tabs } from "./model/store";
+    import { activeTab, tabs, persistedState } from "./model/store";
     import EditorContainer from "./EditorContainer.svelte";
     import { get } from "svelte/store";
+    import { readWorkspaceDir } from "./model/filehandle";
     function changeTab(value) {
         $activeTab = value;
+        readWorkspaceDir($persistedState.workspace.path);
+    }
+
+    /**
+     * @param {KeyboardEvent} event
+     */
+    function switchTab(event) {
+        if (event.ctrlKey && event.key === "Tab") {
+            var posLoc = $tabs.length - 1;
+            var activeTabIndex = $tabs.findIndex((e) => e.id == $activeTab.id);
+            if (activeTabIndex === posLoc) {
+                $activeTab = $tabs[0];
+            } else {
+                $activeTab = $tabs[activeTabIndex + 1];
+            }
+        }
+        if (event.ctrlKey && event.shiftKey && event.key === "Tab") {
+            console.log("back");
+            var posLoc = $tabs.length - 1;
+            var activeTabIndex = $tabs.findIndex((e) => e.id == $activeTab.id);
+            if (activeTabIndex === 0) {
+                $activeTab = $tabs[posLoc];
+            } else {
+                $activeTab = $tabs[activeTabIndex - 1];
+            }
+        }
+        readWorkspaceDir($persistedState.workspace.path);
     }
 
     function closeTab(tabIndex) {
-        var closeIndex = $tabs.findIndex((e) => e.path == $tabs[tabIndex].path);
-
+        var closeIndex = $tabs.findIndex((e) => e.id == $tabs[tabIndex].id);
+        var allTabs = $tabs;
         if (closeIndex > -1) {
-            if (closeIndex == ($tabs.length - 1)) {
-                $activeTab = get(tabs)[(get(tabs).length - 1) - 1];
-                $tabs = get(tabs).filter((e)=> e.id !== get(tabs)[closeIndex].id)
+            if (closeIndex == $tabs.length - 1) {
+                if ($tabs.length === 1) {
+                    $activeTab = { id: "", filename: "", path: "" };
+                    $tabs = [];
+                } else {
+                    $activeTab = allTabs[allTabs.length - 1 - 1];
+                    allTabs.splice(closeIndex, 1);
+                    $tabs = allTabs;
+                }
             } else {
-                $activeTab = get(tabs)[closeIndex + 1];
-                $tabs = get(tabs).filter((e)=> e.id !== get(tabs)[closeIndex].id)
+                $activeTab = allTabs[closeIndex + 1];
+                allTabs.splice(closeIndex, 1);
+                $tabs = allTabs;
             }
         }
+        readWorkspaceDir($persistedState.workspace.path);
     }
 
     $: openedtabs = $tabs;
@@ -68,6 +104,8 @@
         {/each}
     </div>
 </div>
+
+<svelte:window on:keydown={switchTab} />
 
 <style>
     .tabzone__container {

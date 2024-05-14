@@ -1,17 +1,18 @@
 <script>
     import { appWindow } from "@tauri-apps/api/window";
+    import { activeTab } from "./model/store";
 </script>
 
 <nav data-tauri-drag-region class="main__windowtitlebar">
-    <div data-tauri-drag-region class="titlebar__title"></div>
+    <div data-tauri-drag-region class="titlebar__title">bored notes {($activeTab.filename !== "" || !($activeTab)) ? `- ${$activeTab.filename}` : ""}</div>
     <div class="titlebar__action">
         <button
             class="icon__button minimize__button"
             on:click={() => appWindow.minimize()}
         >
             <svg
-                width="48"
-                height="48"
+                width="1em"
+                height="1em"
                 viewBox="0 0 48 48"
                 version="1.1"
                 id="close_icon"
@@ -33,8 +34,8 @@
             on:click={() => appWindow.toggleMaximize()}
         >
             <svg
-                width="48"
-                height="48"
+                width="1em"
+                height="1em"
                 viewBox="0 0 48 48"
                 version="1.1"
                 id="close_icon"
@@ -52,8 +53,8 @@
             on:click={() => appWindow.close()}
         >
             <svg
-                width="48"
-                height="48"
+                width="1em"
+                height="1em"
                 viewBox="0 0 48 48"
                 version="1.1"
                 id="close_icon"
@@ -84,6 +85,13 @@
         z-index: 30;
     }
 
+    .titlebar__title{
+        display: flex;
+        align-items: center;
+        padding-left: 2.4em;
+        color: var(--onSurface);
+    }
+
     .titlebar__action {
         display: flex;
         top: 0;
@@ -95,12 +103,10 @@
     .maximize__button,
     .minimize__button {
         color: var(--onSurface);
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        display: block;
         height: 100%;
-        padding: 10px;
-        width: 1.2em;
+        width: 2.4em;
+        padding: 12px;
         border-left: 1px solid transparent !important;
         border-right: 1px solid transparent !important;
     }

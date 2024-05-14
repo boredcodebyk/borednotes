@@ -53,10 +53,10 @@ body {
   background-color: var(--surfaceContainerLow, #2a2a2a);
   color: var(--onSurface);
   height: calc(100dvh - 2.4em);
-  width: calc(100dvw - 408px);
+  width: calc(100dvw - 22.6em);
   position: fixed;
   top: 2.4em;
-  left: 408px;
+  left: 22.6em;
   z-index: 0;
   margin: 0;
   padding: 0;
@@ -64,22 +64,22 @@ body {
 }
 
 .main__container__fillwidth {
-  left: 48px;
-  width: calc(100dvw - 48px);
+  left: 2.6em;
+  width: calc(100dvw - 2.6em);
 }
 
 .main__sidepane {
   background-color: var(--surfaceContainer, #3b3b3b);
   color: var(--onSurface);
   border-right: 1px solid var(--outlineVariant);
-  width: 360px;
+  width: 20em;
   margin: 0;
   padding: 0;
   height: calc(100dvh - 2.4em);
   z-index: 1;
   position: fixed;
   top: 2.4em;
-  left: 48px;
+  left: 2.6em;
 }
 
 .main__sidepane__hidden {
@@ -127,7 +127,7 @@ body {
 .main__sideactionbar {
   background-color: var(--surfaceContainerHigh, #1a1a1a);
   border-right: 1px solid var(--outlineVariant);
-  width: 2.4em;
+  width: 2.6em;
   height: calc(100dvh - 2.4em);
   z-index: 2;
   position: fixed;
@@ -222,15 +222,18 @@ body {
 }
 
 .icon__button {
-  display: block;
+  display: flex;
   background-color: transparent;
   color: var(--onSurface);
-  padding: 12px;
+  padding: 6px;
   border: 2px solid transparent;
   text-decoration: none;
-  height: 2.4em;
-  width: 2.4em;
+  height: 2.8em;
+  width: 100%;
+  font-size: 1.2em;
   opacity: 60%;
+  justify-content: center;
+  align-items: center;
 }
 
 .icon__button:hover {
@@ -314,11 +317,11 @@ body {
   color: var(--onSecondaryContainer);
 }
 
-.filetree__file > svg {
+.filetree__file>svg {
   display: inline-block;
   width: 1em;
   padding-right: 0.5em;
-  
+
 }
 
 .filetree__folder {
@@ -328,7 +331,7 @@ body {
   padding: 0.25em 0.5em;
 }
 
-.filetree__folder > svg {
+.filetree__folder>svg {
   display: inline-block;
   width: 1em;
   padding-right: 0.5em;

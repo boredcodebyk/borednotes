@@ -113,7 +113,7 @@
         width: 100%;
     }
     .tabzone__tabbar {
-        height: 48px;
+        height: 2.4em;
         top: 0;
         position: relative;
         background-color: var(--surfaceContainer);
@@ -132,7 +132,9 @@
     .tabzone__tabbar > li {
         background-color: transparent;
         min-width: 200px;
-        display: inline;
+        display: inline-flex;
+        align-items: center;
+        justify-content: space-between;
     }
     .tabzone__tabbar > li > .tab__button {
         background-color: var(--surfaceContainer);
